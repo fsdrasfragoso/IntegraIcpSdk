@@ -10,10 +10,10 @@ class SignatureService implements SignatureInterface
     private HttpClientInterface $httpClient;
     private string $baseUrl;
 
-    public function __construct(HttpClientInterface $httpClient, string $baseUrl)
+    public function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = getenv('INTEGRAICP_URL') ?: 'https://api.integralcp.com/icp/v3';
     }
 
     public function sign(array $data): SignatureResponse

@@ -16,7 +16,150 @@ Para utilizar os serviços, as aplicações (web ou móveis) precisam de acesso 
 
 - [Portal Valid](https://valid-sa.atlassian.net/servicedesk/customer/portal/4/group/115/create/51)
 - E-mail: [produtos.certificadora@valid.com](mailto:produtos.certificadora@valid.com)
+## Uso do SDK
 
+A IntegraICP fornece um SDK para facilitar a integração com suas APIs. Veja abaixo como utilizá-lo:
+
+### Contratos
+
+#### `AuthenticationInterface`
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Contracts;
+
+use FragosoSoftware\IntegraIcpSdk\Models\AuthenticationResponse;
+
+interface AuthenticationInterface
+{
+    /**
+     * Método para obter a lista de Clearances (provedores de autenticação).
+     *
+     * @param array $params Parâmetros para a requisição (ex.: subject_key, callback_uri).
+     * @return AuthenticationResponse Retorna a resposta de autenticação encapsulada em um modelo.
+     */
+    public function getClearances(array $params): AuthenticationResponse;
+}
+```
+
+#### `HttpClientInterface`
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Contracts;
+
+interface HttpClientInterface
+{
+    public function get(string $url, array $params = []): array;
+    public function post(string $url, array $data): array;
+}
+```
+
+#### `SignatureInterface`
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Contracts;
+
+use FragosoSoftware\IntegraIcpSdk\Models\SignatureResponse;
+
+interface SignatureInterface
+{
+    /**
+     * Realiza uma assinatura digital usando os dados fornecidos.
+     *
+     * @param array $data Dados necessários para a assinatura, incluindo `credentialId` e `hashes`.
+     * @return SignatureResponse Retorna a resposta da assinatura encapsulada em um modelo.
+     */
+    public function sign(array $data): SignatureResponse;
+}
+```
+
+---
+
+### Implementações de Serviços
+
+#### Serviço de Autenticação
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Services;
+
+use FragosoSoftware\IntegraIcpSdk\Contracts\AuthenticationInterface;
+use FragosoSoftware\IntegraIcpSdk\Contracts\HttpClientInterface;
+use FragosoSoftware\IntegraIcpSdk\Models\AuthenticationResponse;
+
+class AuthenticationService implements AuthenticationInterface
+{
+    private HttpClientInterface $httpClient;
+    private string $baseUrl;
+
+    public function __construct(HttpClientInterface $httpClient, string $baseUrl)
+    {
+        $this->httpClient = $httpClient;
+        $this->baseUrl = $baseUrl;
+    }
+
+    public function getClearances(array $params): AuthenticationResponse
+    {
+        $url = "{$this->baseUrl}/authentications";
+        $response = $this->httpClient->get($url, $params);
+
+        return new AuthenticationResponse($response);
+    }
+}
+```
+
+#### Serviço de Assinatura
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Services;
+
+use FragosoSoftware\IntegraIcpSdk\Contracts\SignatureInterface;
+use FragosoSoftware\IntegraIcpSdk\Contracts\HttpClientInterface;
+use FragosoSoftware\IntegraIcpSdk\Models\SignatureResponse;
+
+class SignatureService implements SignatureInterface
+{
+    private HttpClientInterface $httpClient;
+    private string $baseUrl;
+
+    public function __construct(HttpClientInterface $httpClient, string $baseUrl)
+    {
+        $this->httpClient = $httpClient;
+        $this->baseUrl = $baseUrl;
+    }
+
+    public function sign(array $data): SignatureResponse
+    {
+        $url = "{$this->baseUrl}/signatures";
+        $response = $this->httpClient->post($url, $data);
+
+        return new SignatureResponse($response);
+    }
+}
+```
+
+---
+
+### Modelos de Resposta
+
+#### `AuthenticationResponse`
+
+```php
+namespace FragosoSoftware\IntegraIcpSdk\Models;
+
+class AuthenticationResponse
+{
+    private array $clearances;
+
+    public function __construct(array $data)
+    {
+        $this->clearances = $data['clearances'] ?? [];
+    }
+
+    public function getClearances(): array
+    {
+        return $this->clearances;
+    }
+}
+```
 ---
 
 ## Assinatura Eletrônica Qualificada
