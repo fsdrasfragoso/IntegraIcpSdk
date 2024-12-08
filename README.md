@@ -119,65 +119,7 @@ Permite realizar assinaturas eletrônicas em múltiplos conteúdos.
 
 A **RFC 7636** (Proof Key for Code Exchange by OAuth Public Clients) é usada para mitigar ataques de interceptação de códigos de autorização em comunicações OAuth. Consulte [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636) para mais detalhes.
 
-#### Exemplo de Geração de `secret_data` em Node.js:
 
-```javascript
-const crypto = require('crypto');
-const base64url = require('base64url');
-
-function generateSecretData() {
-  const secret = crypto.randomBytes(32).toString('base64url');
-  const challenge = base64url(crypto.createHash('sha256').update(secret).digest());
-  return { secret, challenge };
-}
-
-const { secret, challenge } = generateSecretData();
-console.log('Secret:', secret);
-console.log('Challenge:', challenge);
-```
-
-#### Exemplo de Geração de `secret_data` em Java:
-
-```java
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
-
-public class PKCEGenerator {
-
-    public static String generateCodeVerifier() {
-        byte[] bytes = new byte[43];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(bytes);
-        return base64UrlEncode(bytes);
-    }
-
-    public static String generateCodeChallenge(String codeVerifier) throws NoSuchAlgorithmException {
-        byte[] bytes = codeVerifier.getBytes();
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        messageDigest.update(bytes);
-        byte[] digest = messageDigest.digest();
-        return base64UrlEncode(digest);
-    }
-
-    private static String base64UrlEncode(byte[] bytes) {
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    public static void main(String[] args) {
-        try {
-            String codeVerifier = generateCodeVerifier();
-            System.out.println("Code Verifier: " + codeVerifier);
-
-            String codeChallenge = generateCodeChallenge(codeVerifier);
-            System.out.println("Code Challenge: " + codeChallenge);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
 
 ---
 
