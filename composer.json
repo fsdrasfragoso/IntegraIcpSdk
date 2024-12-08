@@ -1,0 +1,29 @@
+{
+    "name": "fragoso-software/integra-icp-sdk",
+    "description": "SDK para integração com a IntegraICP",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^5.3.3|^6.2.1|^7.0",
+        "guzzlehttp/psr7": "^1.4.1",
+        "guzzlehttp/promises": "^1.0",
+        "vlucas/phpdotenv": "^1",
+        "nesbot/carbon": "^1.39"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "FragosoSoftware\\IntegraIcpSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "esdrasfragoso",
+            "email": "esdrasfragoso@gmail.com"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
+    }
+}
